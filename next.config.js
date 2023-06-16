@@ -1,4 +1,7 @@
-/** @type {import('next').NextConfig} */
-const nextConfig = {}
+// @ts-check
+/**
+ * @type {import('next').NextConfig}
+ **/
+const nextConfig = {};
 
-module.exports = nextConfig
+module.exports = nextConfig;
