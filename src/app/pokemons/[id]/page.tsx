@@ -1,5 +1,7 @@
 "use client";
 
+import { useState, useEffect } from "react";
+
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 
@@ -15,11 +17,26 @@ async function getPokemonInfo(pokemonId: number) {
   return result;
 }
 
-export default async function PokemonDetails() {
+export default function PokemonDetails() {
   const pathname = usePathname();
   const id = parseInt(pathname.replace("/pokemons/", ""));
 
-  const pokemonInfo: PokemonAPI = await getPokemonInfo(id);
+  const [isLoading, setIsLoading] = useState(true);
+  const [pokemonInfo, setPokemonInfo] = useState<PokemonAPI | null>(null);
+
+  useEffect(() => {
+    const fetchPokemonInfo = async () => {
+      const info: PokemonAPI = await getPokemonInfo(id);
+      setPokemonInfo(info);
+      setIsLoading(false);
+    };
+
+    fetchPokemonInfo();
+  }, [id]);
+
+  if (isLoading) {
+    return <div>Loading...</div>; // Placeholder loading animation or text
+  }
 
   return (
     <main className="flex min-h-[50vh] flex-col items-center justify-between p-24">
@@ -31,7 +48,7 @@ export default async function PokemonDetails() {
         alt="Pokemon Artwork"
       />
 
-      <div>{capitalizeFirstLetter(pokemonInfo.name)}</div>
+      <div>{capitalizeFirstLetter(pokemonInfo?.name || "")}</div>
     </main>
   );
 }
