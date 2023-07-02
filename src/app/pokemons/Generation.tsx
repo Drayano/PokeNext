@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import Pokemon from "./Pokemon";
 
 export default function Generation({ start, end }: { start: number; end: number }) {
-  const itemsPerPage = 12;
+  const itemsPerPage = 6;
   const [currentPage, setCurrentPage] = useState(1);
   const [pokemonIdsGen, setPokemonIdsGen] = useState<number[]>([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -66,7 +66,7 @@ export default function Generation({ start, end }: { start: number; end: number 
           // Simulating an API call delay
           setTimeout(() => {
             setCurrentPage((prevPage) => prevPage + 1);
-          }, 250);
+          }, 1000);
         } else {
           setIsLoading(false);
         }
@@ -78,7 +78,7 @@ export default function Generation({ start, end }: { start: number; end: number 
 
   return (
     <div className="mt-16">
-      <div className="grid grid-cols-12 max-lg:grid-cols-6 max-sm:grid-cols-3">
+      <div className="grid grid-cols-6 max-lg:grid-cols-3 max-sm:grid-cols-1">
         {pokemonIdsGen.slice(0, currentPage * itemsPerPage).map((id) => (
           <Pokemon
             key={id}
