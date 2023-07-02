@@ -7,6 +7,7 @@ export default function Pokemon({ pokemonId }: { pokemonId: number }) {
       <Link href={`/pokemons/${pokemonId}`}>
         <Image
           src={`/img/pokemons/sprites/image${pokemonId}.png` ?? "/img/unown_error.avif"}
+          unoptimized
           width={75}
           height={75}
           priority={true}
