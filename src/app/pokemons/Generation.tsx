@@ -66,7 +66,7 @@ export default function Generation({ start, end }: { start: number; end: number 
           // Simulating an API call delay
           setTimeout(() => {
             setCurrentPage((prevPage) => prevPage + 1);
-          }, 1000);
+          }, 500);
         } else {
           setIsLoading(false);
         }
@@ -78,7 +78,7 @@ export default function Generation({ start, end }: { start: number; end: number 
 
   return (
     <div className="mt-16">
-      <div className="grid grid-cols-6 max-lg:grid-cols-3 max-sm:grid-cols-1">
+      <div className="grid grid-cols-3 max-lg:grid-cols-2 max-sm:grid-cols-1">
         {pokemonIdsGen.slice(0, currentPage * itemsPerPage).map((id) => (
           <Pokemon
             key={id}

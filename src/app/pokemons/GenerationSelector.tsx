@@ -12,7 +12,7 @@ export default function GenerationSelector({
       {generations.map((generation) => (
         <div
           key={generation}
-          className={`text-center text-5xl mx-4 mb-4 ${
+          className={`text-center text-5xl mx-3 mb-4 ${
             selectedGeneration === generation ? "text-red-500" : "text-white"
           }`}
           onClick={() => handleGenerationClick(generation)}
