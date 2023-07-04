@@ -53,16 +53,72 @@ function getTypeColours(type: string): string {
   }
 }
 
+// Helper function to retrieve data from cache
+const getDataFromCache = async (cacheName: string, key: string) => {
+  const cache = await caches.open(cacheName);
+  const pokemonResponse = await cache.match(`${key}_pokemon`);
+  const imageResponse = await cache.match(`${key}_image`);
+  if (pokemonResponse && imageResponse) {
+    const pokemon = await pokemonResponse.json();
+    const image = await imageResponse.blob();
+    return { pokemon, image };
+  }
+  return null;
+};
+
+// Helper function to cache data
+const cacheData = async (
+  cacheName: string,
+  key: string,
+  data: { pokemon: PokemonAPI; image: Blob },
+) => {
+  const cache = await caches.open(cacheName);
+  const pokemonResponse = new Response(JSON.stringify(data.pokemon));
+  const imageResponse = new Response(data.image);
+  await cache.put(`${key}_pokemon`, pokemonResponse);
+  await cache.put(`${key}_image`, imageResponse);
+};
+
 async function getPokemonInfo(pokemonId: number) {
-  const response: Response = await fetch(`https://pokeapi.co/api/v2/pokemon/${pokemonId}`);
-  const result: PokemonAPI = await response.json();
-  return result;
+  const cacheName = "pokemon-cache";
+  const cacheKey = `pokemon_${pokemonId}`;
+
+  // Check if data is present in cache
+  const cachedData = await getDataFromCache(cacheName, cacheKey);
+  if (cachedData) {
+    return cachedData;
+  }
+
+  try {
+    // Fetch Pokemon data
+    const pokemonResponse: Response = await fetch(`https://pokeapi.co/api/v2/pokemon/${pokemonId}`);
+    const pokemonData: PokemonAPI = await pokemonResponse.json();
+
+    // Fetch Pokemon image
+    const imageResponse: Response = await fetch(`/img/pokemons/sprites/image${pokemonId}.png`);
+    const imageBlob = await imageResponse.blob();
+
+    // Cache the data
+    const data = {
+      pokemon: pokemonData,
+      image: imageBlob,
+    };
+    await cacheData(cacheName, cacheKey, data);
+
+    return data;
+  } catch (error) {
+    console.error(error);
+    return null;
+  }
 }
 
 export default function Pokemon({ pokemonId }: { pokemonId: number }) {
   const [isLoading, setIsLoading] = useState(true);
-  const [pokemonInfo, setPokemonInfo] = useState<PokemonAPI | null>(null);
+  const [pokemonInfo, setPokemonInfo] = useState<
+    Blob | { pokemon: PokemonAPI; image: Blob } | null
+  >(null);
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
+  const [imageBlob, setImageBlob] = useState<Blob | null>(null);
 
   // Update the window width whenever the window is resized
   useEffect(() => {
@@ -78,10 +134,6 @@ export default function Pokemon({ pokemonId }: { pokemonId: number }) {
     };
   }, []);
 
-  // Looks good 1250-1920+ (3) // Looks bad 1024-1250 (3) (This i want 15px)
-  // Looks good 885-1023 (2) // Looks bad 801-885 (2) (This i want 30px)
-  // Looks good 540-800 (1) // Looks bad 360-540 (1) (This i want 0px or -5px)
-  // OTHER THING : 360-420 doesn't look in the center
   const calculatePokemonRightOffset = (windowWidth: number): string => {
     let rightOffset: string;
 
@@ -108,26 +160,58 @@ export default function Pokemon({ pokemonId }: { pokemonId: number }) {
 
   useEffect(() => {
     const fetchPokemonInfo = async () => {
-      const info: PokemonAPI = await getPokemonInfo(pokemonId);
+      const info = await getPokemonInfo(pokemonId);
       setPokemonInfo(info);
-      // Simulate a loading delay of 2 seconds
+      // Simulate a loading delay of 1 seconds
       setTimeout(() => {
         setIsLoading(false);
-      }, 2000);
+      }, 100);
     };
 
     fetchPokemonInfo();
   }, [pokemonId]);
 
-  if (isLoading) {
+  useEffect(() => {
+    const fetchImage = async () => {
+      try {
+        const cacheName = "pokemon-cache";
+        const cacheKey = `pokemon_${pokemonId}`;
+
+        const cachedData = await getDataFromCache(cacheName, cacheKey);
+        if (cachedData && cachedData.pokemon && cachedData.image) {
+          setImageBlob(cachedData.image);
+        } else {
+          const response = await fetch(`/img/pokemons/sprites/image${pokemonId}.png`);
+          const blob = await response.blob();
+          setImageBlob(blob);
+          // Cache the image data
+          if (pokemonInfo) {
+            await cacheData(
+              cacheName,
+              cacheKey,
+              pokemonInfo as { pokemon: PokemonAPI; image: Blob },
+            );
+          }
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    fetchImage();
+  }, [pokemonId, pokemonInfo]);
+
+  if (isLoading || !pokemonInfo) {
     return <PokemonCardSkeleton />;
   }
 
   return (
     <Link href={`/pokemons/${pokemonId}`}>
       <div
-        className={`relative flex items-start justify-start px-24 py-10 mx-4 my-4 h-40 rounded-2xl bg-cover bg-center bg-no-repeat ${getTypeColours(
-          pokemonInfo?.types[0].type.name.toString() || "",
+        className={`relative flex items-start justify-start px-24 py-10 mx-4 my-4 h-40 rounded-2xl bg-cover bg-center bg-no-repeat hover:opacity-[0.85] ${getTypeColours(
+          (
+            pokemonInfo as { pokemon: PokemonAPI; image: Blob }
+          ).pokemon.types[0].type.name.toString() || "",
         )}`}
         style={{
           backgroundImage: `url("/img/pokeball-bg.svg")`,
@@ -135,16 +219,21 @@ export default function Pokemon({ pokemonId }: { pokemonId: number }) {
       >
         <div className="flex flex-col justify-between ml-10">
           <div className="text-white font-bold mb-2 relative bottom-7 right-[7.5rem]">
-            {"#" + pokemonId}
+            {"# " + pokemonId}
           </div>
 
-          <div className="text-white font-bold mb-2 relative bottom-7 right-[7.5rem]">
-            {capitalizeFirstLetter(pokemonInfo?.name || "")}
+          <div className="text-white text-2xl max-sm:text-xl font-bold mb-2 relative bottom-7 right-[7.5rem]">
+            {capitalizeFirstLetter(
+              (pokemonInfo as { pokemon: PokemonAPI; image: Blob }).pokemon.name.toUpperCase() ||
+                "",
+            )}
           </div>
 
           <div className="relative bottom-5 right-[7.5rem]">
             <Image
-              src={`/img/types/${pokemonInfo?.types[0].type.name.toString()}.png`}
+              src={`/img/types/${(
+                pokemonInfo as { pokemon: PokemonAPI; image: Blob }
+              ).pokemon.types[0].type.name.toString()}.png`}
               width={100}
               height={100}
               priority={true}
@@ -152,9 +241,12 @@ export default function Pokemon({ pokemonId }: { pokemonId: number }) {
               className="mb-1"
             />
 
-            {pokemonInfo?.types[1] !== undefined && (
+            {(pokemonInfo as { pokemon: PokemonAPI; image: Blob }).pokemon.types[1] !==
+              undefined && (
               <Image
-                src={`/img/types/${pokemonInfo?.types[1].type.name.toString()}.png`}
+                src={`/img/types/${(
+                  pokemonInfo as { pokemon: PokemonAPI; image: Blob }
+                ).pokemon.types[1].type.name.toString()}.png`}
                 width={100}
                 height={100}
                 priority={true}
@@ -164,18 +256,20 @@ export default function Pokemon({ pokemonId }: { pokemonId: number }) {
           </div>
         </div>
 
-        <Image
-          src={`/img/pokemons/sprites/image${pokemonId}.png`}
-          unoptimized
-          width={100}
-          height={100}
-          priority={true}
-          alt="Pokemon Sprite"
-          className={`absolute bottom-8`}
-          style={{
-            right: calculatePokemonRightOffset(windowWidth),
-          }}
-        />
+        {imageBlob && (
+          <Image
+            src={URL.createObjectURL(imageBlob)}
+            unoptimized
+            width={100}
+            height={100}
+            priority={true}
+            alt="Pokemon Sprite"
+            className={`absolute bottom-8`}
+            style={{
+              right: calculatePokemonRightOffset(windowWidth),
+            }}
+          />
+        )}
       </div>
     </Link>
   );

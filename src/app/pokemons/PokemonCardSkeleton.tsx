@@ -34,7 +34,7 @@ export default function PokemonCardSkeleton() {
 
   return (
     <div
-      className={`relative flex items-start justify-start px-40 py-10 mx-4 my-4 h-40 rounded-2xl bg-cover bg-center bg-no-repeat animate-pulse ${randomColor}`}
+      className={`relative flex items-start justify-start px-48 max-[300px]:px-24  max-[400px]:px-32 py-10 mx-4 my-4 h-40 rounded-2xl bg-cover bg-center bg-no-repeat animate-pulse ${randomColor}`}
       style={{
         backgroundImage: `url("/img/pokeball-bg.svg")`,
       }}
