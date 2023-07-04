@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useState, useEffect } from "react";
 import { PokemonAPI } from "./[id]/PokemonInterfaces";
+import PokemonCardSkeleton from "./PokemonCardSkeleton";
 
 function capitalizeFirstLetter(string: string): string {
   return string.charAt(0).toUpperCase() + string.slice(1);
@@ -114,14 +115,17 @@ export default function Pokemon({ pokemonId }: { pokemonId: number }) {
     const fetchPokemonInfo = async () => {
       const info: PokemonAPI = await getPokemonInfo(pokemonId);
       setPokemonInfo(info);
-      setIsLoading(false);
+      // Simulate a loading delay of 2 seconds
+      setTimeout(() => {
+        setIsLoading(false);
+      }, 2000);
     };
 
     fetchPokemonInfo();
   }, [pokemonId]);
 
   if (isLoading) {
-    return <div>Loading...</div>; // Placeholder loading animation or text
+    return <PokemonCardSkeleton />;
   }
 
   return (

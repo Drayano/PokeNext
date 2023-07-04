@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import Pokemon from "./Pokemon";
 
 export default function Generation({ start, end }: { start: number; end: number }) {
-  const itemsPerPage = 15;
+  const itemsPerPage = 12;
   const [currentPage, setCurrentPage] = useState(1);
   const [pokemonIdsGen, setPokemonIdsGen] = useState<number[]>([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -86,11 +86,7 @@ export default function Generation({ start, end }: { start: number; end: number 
           />
         ))}
       </div>
-      {isLoading && <Loading />}
+      {isLoading}
     </div>
   );
-}
-
-function Loading() {
-  return <p>Loading...</p>;
 }
