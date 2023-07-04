@@ -78,7 +78,7 @@ export default function Generation({ start, end }: { start: number; end: number 
 
   return (
     <div className="mt-16">
-      <div className="grid grid-cols-3 max-lg:grid-cols-2 max-[800px]:grid-cols-1">
+      <div className="grid grid-cols-4 max-[1600px]:grid-cols-3 max-lg:grid-cols-2 max-[800px]:grid-cols-1">
         {pokemonIdsGen.slice(0, currentPage * itemsPerPage).map((id) => (
           <Pokemon
             key={id}

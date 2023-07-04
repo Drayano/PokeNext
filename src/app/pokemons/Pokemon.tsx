@@ -81,11 +81,11 @@ export default function Pokemon({ pokemonId }: { pokemonId: number }) {
   // Looks good 885-1023 (2) // Looks bad 801-885 (2) (This i want 30px)
   // Looks good 540-800 (1) // Looks bad 360-540 (1) (This i want 0px or -5px)
   // OTHER THING : 360-420 doesn't look in the center
-  const calculateRightOffset = (windowWidth: number): string => {
+  const calculatePokemonRightOffset = (windowWidth: number): string => {
     let rightOffset: string;
 
     switch (true) {
-      case windowWidth > 1201 ||
+      case windowWidth >= 1201 ||
         (windowWidth >= 885 && windowWidth <= 1023) ||
         (windowWidth >= 540 && windowWidth <= 800):
         rightOffset = "45px";
@@ -120,15 +120,6 @@ export default function Pokemon({ pokemonId }: { pokemonId: number }) {
     fetchPokemonInfo();
   }, [pokemonId]);
 
-  let types = "";
-  if (pokemonInfo?.types[1] !== undefined) {
-    types += `${capitalizeFirstLetter(
-      pokemonInfo.types[0].type.name.toString(),
-    )} / ${capitalizeFirstLetter(pokemonInfo.types[1].type.name.toString())}`;
-  } else {
-    types += `${capitalizeFirstLetter(pokemonInfo?.types[0].type.name.toString() ?? "")}`;
-  }
-
   if (isLoading) {
     return <div>Loading...</div>; // Placeholder loading animation or text
   }
@@ -136,46 +127,41 @@ export default function Pokemon({ pokemonId }: { pokemonId: number }) {
   return (
     <Link href={`/pokemons/${pokemonId}`}>
       <div
-        className={`relative flex items-start justify-start px-24 py-10 rounded-2xl bg-cover bg-center bg-no-repeat mx-4 my-4 ${getTypeColours(
+        className={`relative flex items-start justify-start px-24 py-10 mx-4 my-4 h-40 rounded-2xl bg-cover bg-center bg-no-repeat ${getTypeColours(
           pokemonInfo?.types[0].type.name.toString() || "",
         )}`}
         style={{
           backgroundImage: `url("/img/pokeball-bg.svg")`,
-          height: "150px",
         }}
       >
         <div className="flex flex-col justify-between ml-10">
-          <div
-            className="text-white font-bold mb-2"
-            style={{
-              position: "relative",
-              bottom: "25px",
-              right: "120px",
-            }}
-          >
+          <div className="text-white font-bold mb-2 relative bottom-7 right-[7.5rem]">
             {"#" + pokemonId}
           </div>
 
-          <div
-            className="text-white font-bold mb-2"
-            style={{
-              position: "relative",
-              bottom: "30px",
-              right: "120px",
-            }}
-          >
+          <div className="text-white font-bold mb-2 relative bottom-7 right-[7.5rem]">
             {capitalizeFirstLetter(pokemonInfo?.name || "")}
           </div>
 
-          <div
-            className="text-white"
-            style={{
-              position: "relative",
-              bottom: "25px",
-              right: "100px",
-            }}
-          >
-            {types}
+          <div className="relative bottom-5 right-[7.5rem]">
+            <Image
+              src={`/img/types/${pokemonInfo?.types[0].type.name.toString()}.png`}
+              width={100}
+              height={100}
+              priority={true}
+              alt="Pokemon Type"
+              className="mb-1"
+            />
+
+            {pokemonInfo?.types[1] !== undefined && (
+              <Image
+                src={`/img/types/${pokemonInfo?.types[1].type.name.toString()}.png`}
+                width={100}
+                height={100}
+                priority={true}
+                alt="Pokemon Type"
+              />
+            )}
           </div>
         </div>
 
@@ -186,10 +172,9 @@ export default function Pokemon({ pokemonId }: { pokemonId: number }) {
           height={100}
           priority={true}
           alt="Pokemon Sprite"
+          className={`absolute bottom-8`}
           style={{
-            position: "absolute",
-            bottom: "25px",
-            right: calculateRightOffset(windowWidth),
+            right: calculatePokemonRightOffset(windowWidth),
           }}
         />
       </div>
