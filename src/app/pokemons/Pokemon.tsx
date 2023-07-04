@@ -56,7 +56,7 @@ function getTypeColours(type: string): string {
 // Helper function to retrieve data from cache
 const getDataFromCache = async (cacheName: string, key: string) => {
   const cache = await caches.open(cacheName);
-  const pokemonResponse = await cache.match(`${key}_pokemon`);
+  const pokemonResponse = await cache.match(`${key}_data`);
   const imageResponse = await cache.match(`${key}_image`);
   if (pokemonResponse && imageResponse) {
     const pokemon = await pokemonResponse.json();
@@ -75,7 +75,7 @@ const cacheData = async (
   const cache = await caches.open(cacheName);
   const pokemonResponse = new Response(JSON.stringify(data.pokemon));
   const imageResponse = new Response(data.image);
-  await cache.put(`${key}_pokemon`, pokemonResponse);
+  await cache.put(`${key}_data`, pokemonResponse);
   await cache.put(`${key}_image`, imageResponse);
 };
 
