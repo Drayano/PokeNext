@@ -161,7 +161,7 @@ export default function Pokemon({ pokemonId }: { pokemonId: number }) {
       // Simulate a loading delay of 1 seconds
       setTimeout(() => {
         setIsLoading(false);
-      }, 100);
+      }, 500);
     };
 
     fetchPokemonInfo();
