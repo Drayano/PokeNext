@@ -48,29 +48,6 @@ export default function PokemonDetails() {
     }
   }
 
-  let types = "";
-  if (pokemonInfo?.types[1] !== undefined) {
-    types += `${capitalizeFirstLetter(
-      pokemonInfo.types[0].type.name.toString(),
-    )} / ${capitalizeFirstLetter(pokemonInfo.types[1].type.name.toString())}`;
-  } else {
-    types += `${capitalizeFirstLetter(pokemonInfo?.types[0].type.name.toString() ?? "")}`;
-  }
-
-  const formsList: string[] = [];
-  for (let index = 0; index < (pokemonInfo?.forms.length ?? 0); index++) {
-    formsList.push(pokemonInfo?.forms[index].name ?? "");
-  }
-
-  let forms = "";
-  for (let index = 0; index < formsList.length; index++) {
-    if (index === formsList.length - 1) {
-      forms += capitalizeFirstLetter(formsList[index]);
-    } else {
-      forms += capitalizeFirstLetter(formsList[index]) + " / ";
-    }
-  }
-
   if (isLoading) {
     return <div>Loading...</div>; // Placeholder loading animation or text
   }
@@ -90,8 +67,30 @@ export default function PokemonDetails() {
       </div>
 
       <div>{"Abilities : " + abilities}</div>
-      <div>{"Types : " + types}</div>
-      <div>{"Forms : " + forms}</div>
+      <div className="flex">
+        <div className="mr-4">{"Types : "}</div>
+        <div className="mr-2">
+          <Image
+            src={`/img/types/${pokemonInfo?.types[0].type.name.toString()}.png`}
+            width={100}
+            height={100}
+            priority={true}
+            alt="Pokemon Type"
+            className="mb-1"
+          />
+        </div>
+        <div>
+          {pokemonInfo?.types[1] !== undefined && (
+            <Image
+              src={`/img/types/${pokemonInfo?.types[1].type.name.toString()}.png`}
+              width={100}
+              height={100}
+              priority={true}
+              alt="Pokemon Type"
+            />
+          )}
+        </div>
+      </div>
     </main>
   );
 }
