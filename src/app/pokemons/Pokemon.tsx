@@ -4,10 +4,6 @@ import { useState, useEffect } from "react";
 import { PokemonAPI } from "./[id]/PokemonInterfaces";
 import PokemonCardSkeleton from "./PokemonCardSkeleton";
 
-function capitalizeFirstLetter(string: string): string {
-  return string.charAt(0).toUpperCase() + string.slice(1);
-}
-
 function getTypeColours(type: string): string {
   type = type.toLowerCase();
 
@@ -222,11 +218,15 @@ export default function Pokemon({ pokemonId }: { pokemonId: number }) {
             {"# " + pokemonId}
           </div>
 
-          <div className="text-white text-2xl max-sm:text-xl font-bold mb-2 relative bottom-7 right-[7.5rem]">
-            {capitalizeFirstLetter(
-              (pokemonInfo as { pokemon: PokemonAPI; image: Blob }).pokemon.name.toUpperCase() ||
-                "",
-            )}
+          <div
+            className={`text-white ${
+              (pokemonInfo as { pokemon: PokemonAPI; image: Blob }).pokemon.name.toUpperCase()
+                .length >= 11
+                ? "text-lg"
+                : "text-2xl"
+            } max-sm:text-xl font-bold mb-2 relative bottom-7 right-[7.5rem]`}
+          >
+            {(pokemonInfo as { pokemon: PokemonAPI; image: Blob }).pokemon.name.toUpperCase() || ""}
           </div>
 
           <div className="relative bottom-5 right-[7.5rem]">
