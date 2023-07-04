@@ -63,8 +63,8 @@ export default function Pokemons() {
   };
 
   return (
-    <main className="flex min-h-screen flex-col items-center p-24">
-      <div className="text-center text-7xl mb-16">Pokemons</div>
+    <main className="flex min-h-screen flex-col items-center p-6">
+      <div className="text-center text-7xl mb-16 max-sm:text-5xl">Pokemons</div>
 
       <GenerationSelector
         selectedGeneration={selectedGeneration}

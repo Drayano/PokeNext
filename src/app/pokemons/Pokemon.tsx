@@ -86,22 +86,17 @@ export default function Pokemon({ pokemonId }: { pokemonId: number }) {
     let rightOffset: string;
 
     switch (true) {
-      case windowWidth >= 1201 ||
-        (windowWidth >= 885 && windowWidth <= 1023) ||
-        (windowWidth >= 540 && windowWidth <= 800):
+      case windowWidth >= 400:
         rightOffset = "45px";
         break;
-      case windowWidth >= 1024 && windowWidth <= 1200:
-        rightOffset = "15px";
-        break;
-      case windowWidth >= 801 && windowWidth <= 884:
+      case windowWidth >= 340 && windowWidth <= 399:
         rightOffset = "30px";
         break;
-      case windowWidth >= 451 && windowWidth <= 539:
-        rightOffset = "25px";
+      case windowWidth >= 300 && windowWidth <= 339:
+        rightOffset = "10px";
         break;
-      case windowWidth >= 360 && windowWidth <= 450:
-        rightOffset = "-5px";
+      case windowWidth <= 299:
+        rightOffset = "-10px";
         break;
       default:
         rightOffset = "";
