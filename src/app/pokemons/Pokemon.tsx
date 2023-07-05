@@ -12,9 +12,9 @@ function getTypeColours(type: string): string {
 
   switch (type) {
     case "bug":
-      return "bg-[#8bd674]";
+      return "bg-[#8bc34a]";
     case "dark":
-      return "bg-[#4c91b2]"; // TODO: CHANGE THE COLOR
+      return "bg-[#555555]";
     case "dragon":
       return "bg-[#7383b9]";
     case "electric":
@@ -28,7 +28,7 @@ function getTypeColours(type: string): string {
     case "flying":
       return "bg-[#748fc9]";
     case "ghost":
-      return "bg-[#8571be]";
+      return "bg-[#6b57b8]";
     case "grass":
       return "bg-[#8bbe8a]";
     case "ground":

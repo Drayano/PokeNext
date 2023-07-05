@@ -2,15 +2,15 @@ import { useEffect, useState } from "react";
 
 // Define the list of type colors
 const typeColors = [
-  "bg-[#8bd674]",
-  "bg-[#4c91b2]",
+  "bg-[#8bc34a]",
+  "bg-[#555555]",
   "bg-[#7383b9]",
   "bg-[#f2cb55]",
   "bg-[#eba8c3]",
   "bg-[#eb4971]",
   "bg-[#ffa756]",
   "bg-[#748fc9]",
-  "bg-[#8571be]",
+  "bg-[#6b57b8]",
   "bg-[#8bbe8a]",
   "bg-[#f78551]",
   "bg-[#91d8df]",
