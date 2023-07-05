@@ -5,7 +5,7 @@ import { useState, useEffect } from "react";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 
-import { PokemonAPI } from "./PokemonInterfaces";
+import { PokemonAPI } from "../PokemonInterfaces";
 
 function capitalizeFirstLetter(string: string): string {
   return string.charAt(0).toUpperCase() + string.slice(1);

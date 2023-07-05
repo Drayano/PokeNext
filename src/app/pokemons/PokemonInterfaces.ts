@@ -261,3 +261,8 @@ export interface PokemonAPI {
   stats: Stat[];
   types: Type[];
 }
+
+export interface PokemonData {
+  pokemon: PokemonAPI;
+  image: Blob;
+}
